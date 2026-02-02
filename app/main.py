@@ -1,8 +1,6 @@
-
 from fastapi import FastAPI
+from app.api.analyze import router as analyze_router
 
-app = FastAPI(title="Stock & Crypto Analyzer")
+app = FastAPI(title="Stocks & Crypto Analyzer")
 
-@app.get("/")
-def read_root():
-    return {"message": "Hello, Analyzer!"}
+app.include_router(analyze_router)

@@ -1,10 +1,21 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
+from app.services.data.market_data import get_historical_prices
+from app.services.kpis.returns import calculate_returns
 
 router = APIRouter()
 
 @router.get("/analyze")
 def analyze(ticker:str):
-    return{
-        "ticker":ticker,
-        "status": "KPI engine coming online"
-    }
+    try:
+        prices = get_historical_prices(ticker)
+        returns = calculate_returns(prices)
+    
+        return{
+            "ticker":ticker,
+            "returns":returns,
+        }
+    
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
+    

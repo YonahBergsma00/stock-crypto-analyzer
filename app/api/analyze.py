@@ -5,7 +5,7 @@ from app.services.kpis.volatility import calculate_volatility
 from app.services.kpis.momentum import calculate_rsi
 from app.services.kpis.signals import rsi_signal, trend_signal, sma_crossover
 from app.services.kpis.trend import detect_trend
-from app.services.kpis.scoring import combined_score, convert_score
+from app.services.kpis.scoring import z_score_regressors, probability_up, convert_score
 
 router = APIRouter()
 
@@ -38,13 +38,12 @@ def analyze(ticker:str):
         sma_crossover_signal = sma_crossover(prices, ticker)
         print("✅ SMA crossover detected")
 
-        action_score = combined_score(rsi["rsi_val"], trend["trend_val"], volatility["vol_val"],
+        action_score = z_score_regressors(rsi["rsi_val"], trend["trend_val"], volatility["vol_val"],
                    rsi["rsi_mean"], rsi["rsi_std"], trend["trend_mean"], trend["trend_std"], volatility["vol_mean"], volatility["vol_std"])
-        action = convert_score(action_score)
+        prob_up = probability_up(action_score["rsi_z"], action_score["trend_z"], action_score["val_z"])
+        action = convert_score(prob_up)
         print("✅ Buy/Hold/Avoid action detected")
 
-
-    
         return{
             "ticker":ticker,
             "returns":returns,
@@ -54,6 +53,7 @@ def analyze(ticker:str):
             "trend": trend,
             "trend_signal": trend_sig,
             "sma crossover signal": sma_crossover_signal,
+            "probability up": prob_up,
             "action": action,
         }
     

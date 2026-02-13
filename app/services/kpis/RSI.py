@@ -23,13 +23,11 @@ def calculate_rsi(prices: pd.Series, ticker: str, period: int = 14) -> dict:
     rsi = 100 - (100/ (1 + rs))
     rsi_centered = rsi +- 50
 
-    rsi_latest = float(round(rsi[ticker].iloc[-1], 2))
     rsi_val = float(round(rsi_centered[ticker].iloc[-1], 2))
     rsi_mean = float(round(rsi_centered[ticker].mean(), 2))
     rsi_std = float(round(rsi_centered[ticker].std(), 2))
 
     return {
-        "rsi_latest": rsi_latest,
         "rsi_val": rsi_val,
         "rsi_mean": rsi_mean,
         "rsi_std": rsi_std,

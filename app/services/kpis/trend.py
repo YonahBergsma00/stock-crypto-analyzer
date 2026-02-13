@@ -1,16 +1,13 @@
 import pandas as pd
 
-def calculate_sma(prices: pd.Series, window:int) -> pd.Series:
-    return prices.rolling(window=window).mean()
-
-def detect_trend(prices: pd.Series, ticker: str, short_window: int = 20, long_window: int= 50) -> dict:
+def calculate_trend(prices: pd.Series, ticker: str, short_window: int = 20, long_window: int= 50) -> dict:
     """
     Detect the trend of a ticker using Simple Moving Average short/long window.
     """
     
     # Calculate SMAs
-    sma_short = calculate_sma(prices, short_window)
-    sma_long = calculate_sma(prices, long_window)
+    sma_short = prices.rolling(window=short_window).mean()
+    sma_long = prices.rolling(window=long_window).mean()
 
     # Calculate trend strength series
     strength_series = (sma_short[ticker] - sma_long[ticker]) / sma_long[ticker] * 100
@@ -33,9 +30,6 @@ def detect_trend(prices: pd.Series, ticker: str, short_window: int = 20, long_wi
     std_strength = float(round(strength_series.std(), 2))
 
     return{
-        "trend": trend,
-        "sma_short": round(float(latest_sma_short), 2),
-        "sma_long": round(float(latest_sma_long), 2),
         "trend_val": latest_strength,
         "trend_mean": mean_strength,
         "trend_std": std_strength,
